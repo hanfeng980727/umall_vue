@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="info.ischange?'添加':'编辑'" :visible.sync="info.isshow" width="30%">
+    <el-dialog :title="info.ischange?'菜单添加':'编辑信息'"  :visible.sync="info.isshow" @closed="cancel">
       <!-- 数据 -->
       <el-form ref="form" :model="user" label-width="80px">
         <el-form-item label="角色名称">
@@ -81,6 +81,9 @@ export default {
     },
     // 关闭弹窗
     cancel() {
+      if(!this.info.ischange){
+        this.empty()
+      }
       this.info.isshow = false;
     },
     // ref调用

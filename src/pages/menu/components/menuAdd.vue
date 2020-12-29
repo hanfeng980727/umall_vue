@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 注遗漏：未做补充添加以及删除的提示框 -->
-    <el-dialog :title="info.flag?'菜单添加':'编辑信息'"  :visible.sync="info.isshow">
+    <el-dialog :title="info.flag?'菜单添加':'编辑信息'"  :visible.sync="info.isshow" @closed="cancle">
       <!-- 表单信息 -->
 
       <el-form ref="form" :model="user" label-width="80px">
@@ -63,9 +63,9 @@ export default {
   props: ["info", "list"],
   methods: {
     cancle() {
-        if(!this.info.flag){
-            this.empty()
-        }
+       if (!this.info.flag) {
+        this.empty();
+      }
       this.info.isshow = false;
     },
     menuAdd() {

@@ -54,7 +54,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      reqList: "specs/reqList"
+      reqList: "specs/reqList",
+      reqTotal:"specs/reqTotal"
     }),
     //取消
     cancel() {

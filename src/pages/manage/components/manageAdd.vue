@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-dialog :title="info.change?'添加':'编辑'" :visible.sync="info.isshow" width="30%">
+    <el-dialog :title="info.change?'添加':'编辑'" :visible.sync="info.isshow" width="30%" @closed="cancle">
       <!-- 内容 -->
 
       <el-form ref="form" :model="user" label-width="80px">

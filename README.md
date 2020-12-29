@@ -12,7 +12,7 @@ umall_admin
 
 #### 1.商品分类
 
-基本ok，后来改成vuex还没重新整
+基本ok
 
 #### 2.商品规格
 
@@ -32,4 +32,4 @@ umall_admin
 
 #### 6.秒杀
 
-未做完
+jibenok
