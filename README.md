@@ -1,21 +1,35 @@
-# umall_admin
+umall_admin
 
 > A Vue.js project
 
-## Build Setup
+### 系统设置
 
-``` bash
-# install dependencies
-npm install
+基本上都ok
 
-# serve with hot reload at localhost:8080
-npm run dev
+### 商城管理
 
-# build for production with minification
-npm run build
+还没做验证
 
-# build for production and view the bundle analyzer report
-npm run build --report
-```
+#### 1.商品分类
 
-For a detailed explanation on how things work, check out the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
+基本ok，后来改成vuex还没重新整
+
+#### 2.商品规格
+
+基本ok
+
+#### 3.商品管理
+
+基本ok
+
+#### 4.会员管理
+
+有个验证未做
+
+#### 5.轮播图管理
+
+基本ok
+
+#### 6.秒杀
+
+未做完
