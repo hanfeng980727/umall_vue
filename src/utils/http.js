@@ -1,7 +1,11 @@
-import { data } from "autoprefixer";
+// import { data } from "autoprefixer";
 import axios from "axios";
 import qs from "qs";
 import Vue from "vue";
+// 调用了状态层
+import store from "../store";
+// 调用了路由
+import router from "../router"
 
 import { erroralert } from "./alert"
 
@@ -12,6 +16,16 @@ Vue.prototype.$pre = "http://localhost:3000"
 //生产环境使用 打包
 // let baseUrl=""
 // Vue.prototype.$pre=""
+
+// 请求拦截
+axios.interceptors.request.use(req=>{
+    // 判断，只要不是登录页面就要设置请求头
+    if(req.url!=baseUrl+"/api/userlogin"){
+        // 用请求头解析token，解析拦截
+        req.headers.authorization = store.state.userInfo.token;
+    }
+    return req;
+})
 
 
 // 响应拦截
@@ -25,6 +39,15 @@ axios.interceptors.response.use(res => {
     if(!res.data.list){
         res.data.list=[];
     }
+
+    // 如果token的掉线了
+    if(res.data.msg==="登录已过期或访问权限受限"){
+        // 对vuex的状态层的actions的进行操作，将用户信息清空,之后连带着sessionStore数据也会消失
+        store.dispatch("changeUser",{});
+        // 然后自动跳转到登录页面
+        router.push("/login")
+    }
+    
     return res
 })
 

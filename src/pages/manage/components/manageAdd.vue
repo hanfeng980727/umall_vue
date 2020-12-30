@@ -1,6 +1,11 @@
 <template>
   <div>
-    <el-dialog :title="info.change?'添加':'编辑'" :visible.sync="info.isshow" width="30%" @closed="cancle">
+    <el-dialog
+      :title="info.change?'添加':'编辑'"
+      :visible.sync="info.isshow"
+      width="30%"
+      @closed="cancle"
+    >
       <!-- 内容 -->
 
       <el-form ref="form" :model="user" label-width="80px">
@@ -40,7 +45,7 @@
 </template>
 
 <script>
-import { successalert } from "../../../utils/alert";
+import { successalert, erroralert } from "../../../utils/alert";
 import {
   reqRolelist,
   reqUseradd,
@@ -70,7 +75,8 @@ export default {
     },
     // 添加
     manageAdd() {
-      reqUseradd(this.user).then(res => {
+      this.checkProps().then(()=>{
+        reqUseradd(this.user).then(res => {
         if (res.data.code === 200) {
           successalert(res.data.msg);
           // 然后关闭弹窗
@@ -81,6 +87,7 @@ export default {
           this.$emit("init");
         }
       });
+      })
     },
     // 清空
     empty() {
@@ -97,21 +104,42 @@ export default {
         if (res.data.code === 200) {
           this.user = res.data.list;
           // 补uid，其实我也不清楚赋值的时候有没有自动加上，预防一手
-          this.user.uid = uid;
+          // this.user.uid = uid;
           // 如果不去进行密码的修改，便不会进行修改
-          this.user.password=""
+          this.user.password = "";
         }
       });
     },
     // 修改值
     manageUpdate() {
-      reqUseredit(this.user).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
-          this.cancle();
-          this.empty();
-          this.$emit("init");
+      this.checkProps().then(() => {
+        reqUseredit(this.user).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+            this.cancle();
+            this.empty();
+            this.$emit("init");
+          }
+        });
+      });
+    },
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if (this.user.roleid === "") {
+          erroralert("所属角色不能为空");
+          return;
         }
+
+        if (this.user.username === "") {
+          erroralert("用户名不能为空");
+          return;
+        }
+        if (this.user.password === "") {
+          erroralert("密码不能为空");
+          return;
+        }
+
+        resolve();
       });
     }
   },

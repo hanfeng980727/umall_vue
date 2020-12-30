@@ -58,7 +58,7 @@
 <script>
 import { indexRoutes } from "../../../router";
 import { reqMenuadd,reqMenuinfo,reqMenuedit } from "../../../utils/http";
-import { successalert } from "../../../utils/alert";
+import { successalert, erroralert } from "../../../utils/alert";
 export default {
   props: ["info", "list"],
   methods: {
@@ -69,7 +69,8 @@ export default {
       this.info.isshow = false;
     },
     menuAdd() {
-      reqMenuadd(this.user).then(res => {
+      this.checkProps().then(()=>{
+        reqMenuadd(this.user).then(res => {
         if (res.data.code == 200) {
           // 提示
           successalert(res.data.msg);
@@ -81,6 +82,7 @@ export default {
         this.$emit("init")
         }
       });
+      })
     },
     empty() {
       this.user = {
@@ -102,13 +104,15 @@ export default {
         })
     },
     update(){
-        reqMenuedit(this.user).then(res=>{
+        this.checkProps().then(()=>{
+          reqMenuedit(this.user).then(res=>{
             if(res.data.code==200){
                 successalert(res.data.msg);
                 this.cancle();
                 this.empty();
                 this.$emit("init")
             }
+        })
         })
     },
     changePid(){
@@ -117,6 +121,27 @@ export default {
       }else{
         this.user.type=2;
       }
+    },
+    checkProps(){
+      return new Promise((resolve)=>{
+        if(this.user.title==""){
+          erroralert("请输入菜单名称");
+          return;
+        }
+        if(this.user.pid==""){
+          erroralert("请选择上级菜单");
+          return;
+        }
+        if(this.user.type==1&&this.user.icon==""){
+          erroralert("请选择菜单图标");
+          return;
+        }
+        if(this.user.type!=1&&this.user.url===""){
+          erroralert("请设置菜单地址");
+          return;
+        }
+        resolve();
+      })
     }
   },
   data() {

@@ -87,7 +87,8 @@ export default {
     },
     // 添加
     add() {
-      reqBanneradd(this.user).then(res => {
+      this.checkProps().then(()=>{
+        reqBanneradd(this.user).then(res => {
         if (res.data.code === 200) {
           // 成功的弹窗
           successalert(res.data.msg);
@@ -98,6 +99,7 @@ export default {
           this.$emit("init");
         }
       });
+      })
     },
     // ref传值
     getOne(id){
@@ -113,7 +115,8 @@ export default {
     },
     // 修改
     update() {
-        reqBanneredit(this.user).then(res=>{
+      this.checkProps().then(()=>{
+          reqBanneredit(this.user).then(res=>{
             
             if(res.data.code===200){
                 // 成功弹窗
@@ -124,6 +127,22 @@ export default {
                 this.$emit("init");
             }
         })
+      })
+    },
+    // 封装一个验证
+    checkProps(){
+      return new Promise((resolve,reject)=>{
+        if(this.user.title===""){
+          erroralert("标题不能为空");
+          return;
+        }
+
+        if(!this.user.img){
+          erroralert("请上传图片");
+          return;
+        }
+        resolve();
+      })
     }
   }
 };

@@ -36,7 +36,7 @@
   <script>
 import { mapActions, mapGetters } from "vuex";
 import { reqSpecsadd, reqSpecsinfo, reqSpecsedit } from "../../../utils/http";
-import { successalert } from "../../../utils/alert";
+import { successalert,erroralert } from "../../../utils/alert";
 export default {
   props: ["info"],
   data() {
@@ -87,7 +87,8 @@ export default {
       this.user.attrs = JSON.stringify(this.attrsArr.map(item => item.value));
       // console.log(this.user.attrs);
       // 进行添加操作
-      reqSpecsadd(this.user).then(res => {
+     this.checkProps().then(()=>{
+        reqSpecsadd(this.user).then(res => {
         if (res.data.code == 200) {
           // console.log(1);
           // 关闭弹窗
@@ -100,6 +101,7 @@ export default {
           this.reqTotal();
         }
       });
+     })
     },
     //获取一条数据
     getOne(id) {
@@ -118,7 +120,8 @@ export default {
       this.user.attrs=JSON.stringify(this.attrsArr.map(item=>{
         return item.value
       }));
-      // 发送请求
+     this.checkProps().then(()=>{
+        // 发送请求
       reqSpecsedit(this.user).then(res=>{
         if(res.data.code==200){
           successalert(res.data.msg);
@@ -128,10 +131,29 @@ export default {
           this.reqList();
         }
       })
+     })
+    },
+    // 封装一个验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+
+        if (this.user.specsname === "") {
+          erroralert("规格名称不能为空");
+          return;
+        }
+
+        if (this.attrsArr[0].value === "") {
+          erroralert("请选择规格属性");
+          return;
+        }
+
+        resolve();
+      });
     }
   },
   mounted() {
     // this.reqList()
+    // console.log(this.attrsArr);
   }
 };
 </script>

@@ -10,6 +10,7 @@
         </el-form-item>
         <el-form-item label="密码" label-width="100px">
           <el-input v-model="user.password" autocomplete="off"></el-input>
+          <p>留空则不修改</p>
         </el-form-item>
 
         <el-form-item label="状态" label-width="100px">
@@ -19,7 +20,8 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="update">修 改</el-button>
+        <el-button type="primary" @click="update" v-if="user.password">修 改</el-button>
+        <el-button type="primary" @click="update" disabled v-else>修 改</el-button>
       </div>
     </el-dialog>
   </div>
@@ -57,6 +59,7 @@ export default {
         if(res.data.code===200){
           this.user = res.data.list;
           this.user.uid=uid;
+          this.user.password="";
         }
       })
     },

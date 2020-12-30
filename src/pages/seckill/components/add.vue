@@ -79,7 +79,7 @@ import {
   reqSeckinfo,
   reqSeckedit
 } from "../../../utils/http";
-import { successalert } from "../../../utils/alert";
+import { successalert, erroralert } from "../../../utils/alert";
 // 时间戳
 let date = new Date();
 console.log(date, date.getTime());
@@ -184,7 +184,8 @@ export default {
     },
     // 添加
     add() {
-      reqSeckadd(this.user).then(res => {
+     this.checkProps().then(()=>{
+        reqSeckadd(this.user).then(res => {
         if (res.data.code == 200) {
           successalert(res.data.msg);
           // 关弹框
@@ -195,6 +196,7 @@ export default {
           this.reqList();
         }
       });
+     })
     },
     // 编辑
     getOne(id) {
@@ -213,13 +215,43 @@ export default {
     },
     // 修改
     update() {
-      reqSeckedit(this.user).then(res => {
+     this.checkProps().then(()=>{
+        reqSeckedit(this.user).then(res => {
         if (res.data.code == 200) {
           successalert(res.data.msg);
           this.cancel();
           this.empty();
           this.reqList();
         }
+      });
+     })
+    },
+   // 封装一个验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if(this.user.title===""){
+          erroralert("请输入活动名称")
+          return
+        }
+        if(this.dateTime.length==0){
+          erroralert("请设置时间")
+          return
+        }
+        if (this.user.first_cateid === "") {
+          erroralert("一级分类不能为空");
+          return;
+        }
+
+        if (this.user.second_cateid === "") {
+          erroralert("二级分类不能为空");
+          return;
+        }
+        if (this.user.goodsid === "") {
+          erroralert("商品编号不能为空");
+          return;
+        }
+
+        resolve();
       });
     }
   },

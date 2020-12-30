@@ -1,6 +1,11 @@
 <template>
   <div>
-    <el-dialog :title="info.isadd?'添加规格':'编辑规格'" :visible.sync="info.isshow" @closed="cancel" @opened="opened">
+    <el-dialog
+      :title="info.isadd?'添加规格':'编辑规格'"
+      :visible.sync="info.isshow"
+      @closed="cancel"
+      @opened="opened"
+    >
       <el-form :model="user">
         <div>user:{{user}}</div>
         <el-form-item label="一级分类" label-width="100px">
@@ -93,7 +98,7 @@
   </div>
 </template>
   <script>
-  import E from "wangeditor"
+import E from "wangeditor";
 import { mapActions, mapGetters } from "vuex";
 import {
   reqGoodsadd,
@@ -101,7 +106,7 @@ import {
   reqGoodsedit,
   reqCatelist
 } from "../../../utils/http";
-import { successalert } from "../../../utils/alert";
+import { successalert, erroralert } from "../../../utils/alert";
 
 export default {
   props: ["info"],
@@ -227,25 +232,26 @@ export default {
     },
     //点了添加
     add() {
-
+      this.checkProps().then(() => {
         //取出富文本编辑器的内容，赋值给user
-      this.user.description = this.editor.txt.html();
+        this.user.description = this.editor.txt.html();
 
-      // 因为里面有对象文件所以需要进行拷贝
-      let data = {
-        ...this.user,
-        specsattr: JSON.stringify(this.user.specsattr)
-      };
-      // 发送请求
-      reqGoodsadd(data).then(res => {
-        if (res.data.code == 200) {
-          successalert(res.data.msg);
-          this.empty();
-          this.cancel();
-          // 刷新页面
-          this.reqList();
-          this.reqTotal();
-        }
+        // 因为里面有对象文件所以需要进行拷贝
+        let data = {
+          ...this.user,
+          specsattr: JSON.stringify(this.user.specsattr)
+        };
+        // 发送请求
+        reqGoodsadd(data).then(res => {
+          if (res.data.code == 200) {
+            successalert(res.data.msg);
+            this.empty();
+            this.cancel();
+            // 刷新页面
+            this.reqList();
+            this.reqTotal();
+          }
+        });
       });
     },
     //获取一条数据
@@ -262,7 +268,7 @@ export default {
           // 还要将其从字符串转成对象，才能在页面中显示
           this.user.specsattr = JSON.parse(this.user.specsattr);
           //   之后补id,update修改中需要id
-          this.user.id=id;
+          this.user.id = id;
 
           //将user.desctiption赋值给富文本编辑器
           if (this.editor) {
@@ -273,23 +279,25 @@ export default {
     },
     //修改
     update() {
+      this.checkProps().then(()=>{
         //取出富文本编辑器的内容，赋值给user
       this.user.description = this.editor.txt.html();
 
-        // 再将specsattr转成字符串
-        let data={
-            ...this.user,
-            specsattr:JSON.stringify(this.user.specsattr)
+      // 再将specsattr转成字符串
+      let data = {
+        ...this.user,
+        specsattr: JSON.stringify(this.user.specsattr)
+      };
+      // 发送请求
+      reqGoodsedit(data).then(res => {
+        if (res.data.code == 200) {
+          successalert(res.data.msg);
+          this.cancel();
+          this.empty();
+          this.reqList();
         }
-        // 发送请求
-        reqGoodsedit(data).then(res=>{
-            if(res.data.code==200){
-                successalert(res.data.msg);
-                this.cancel();
-                this.empty();
-                this.reqList();
-            }
-        })
+      });
+      })
     },
     //创建富文本编辑器
     opened() {
@@ -298,12 +306,59 @@ export default {
       this.editor.create();
       //赋值
       this.editor.txt.html(this.user.description);
+    },
+    // 封装一个验证
+    checkProps() {
+      return new Promise((resolve, reject) => {
+        if (this.user.first_cateid === "") {
+          erroralert("一级分类不能为空");
+          return;
+        }
+
+        if (this.user.second_cateid === "") {
+          erroralert("二级分类不能为空");
+          return;
+        }
+        if (this.user.goodsname === "") {
+          erroralert("商品名称不能为空");
+          return;
+        }
+
+        if (this.user.price === "") {
+          erroralert("商品价格不能为空");
+          return;
+        }
+
+        if (this.user.market_price === "") {
+          erroralert("商品市场价格不能为空");
+          return;
+        }
+
+        if (!this.user.img) {
+          erroralert("请上传图片");
+          return;
+        }
+        if (this.user.specsid === "") {
+          erroralert("商品规格不能为空");
+          return;
+        }
+
+        if (this.user.specsattr.length === 0) {
+          erroralert("请选择规格属性");
+          return;
+        }
+        if (this.editor.txt.html() == "") {
+          erroralert("请输入商品描述");
+          return;
+        }
+        resolve();
+      });
     }
   },
   mounted() {
     //   商品分类的数据，可以在加一个判断
-    if(this.cateList.length==0){
-    this.reqcatelist();
+    if (this.cateList.length == 0) {
+      this.reqcatelist();
     }
     // 商品规格的数据,在vuex中封装了一个bool类型，当为true获取所有，false为当前页的
     this.reqspecslist(true);

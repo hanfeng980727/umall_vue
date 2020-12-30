@@ -2,7 +2,6 @@
   <div class="form">
     <!-- 44.绑定closed  -->
     <el-dialog :title="info.isadd?'添加分类':'编辑分类'" :visible.sync="info.isshow" @closed="cancel">
-     
       <el-form :model="user">
         <el-form-item label="上级分类" label-width="100px">
           <el-select v-model="user.pid">
@@ -55,13 +54,13 @@
 <script>
 import { reqCateadd, reqCateinfo, reqCateedit } from "../../../utils/http";
 import { successalert, erroralert } from "../../../utils/alert";
-import {mapActions,mapGetters} from "vuex"
+import { mapActions, mapGetters } from "vuex";
 export default {
   // 4.接收info
-  props: ["info", ],
-  computed:{
+  props: ["info"],
+  computed: {
     ...mapGetters({
-      list:"cate/list"
+      list: "cate/list"
     })
   },
   data() {
@@ -80,7 +79,7 @@ export default {
   mounted() {},
   methods: {
     ...mapActions({
-      "reqList":"cate/reqList"
+      reqList: "cate/reqList"
     }),
     //js 上传文件
     changeImg(e) {
@@ -109,11 +108,11 @@ export default {
     },
 
     //ui上传文件
-    changeImg2(e){
-        let file=e.raw;
-        //判断
-        this.imgUrl=URL.createObjectURL(file)
-        this.user.img=file;
+    changeImg2(e) {
+      let file = e.raw;
+      //判断
+      this.imgUrl = URL.createObjectURL(file);
+      this.user.img = file;
     },
 
     //6.点了取消
@@ -137,17 +136,19 @@ export default {
     },
     //4.添加
     add() {
-      reqCateadd(this.user).then(res => {
-        if (res.data.code == 200) {
-          // 封装了成功弹框
-          successalert(res.data.msg);
-          //弹框消失
-          this.cancel();
-          //5.清空user
-          this.empty();
-          //25.列表刷新
-          this.reqList()
-        }
+      this.checkProps().then(() => {
+        reqCateadd(this.user).then(res => {
+          if (res.data.code == 200) {
+            // 封装了成功弹框
+            successalert(res.data.msg);
+            //弹框消失
+            this.cancel();
+            //5.清空user
+            this.empty();
+            //25.列表刷新
+            this.reqList();
+          }
+        });
       });
     },
 
@@ -165,17 +166,36 @@ export default {
     },
     //40修改
     update() {
-      reqCateedit(this.user).then(res => {
-        if (res.data.code == 200) {
-          //弹成功
-          successalert(res.data.msg);
-          //弹框消失
-          this.cancel();
-          //数据清空
-          this.empty();
-          //刷新list
-          this.reqList()
+      this.checkProps().then(() => {
+        reqCateedit(this.user).then(res => {
+          if (res.data.code == 200) {
+            //弹成功
+            successalert(res.data.msg);
+            //弹框消失
+            this.cancel();
+            //数据清空
+            this.empty();
+            //刷新list
+            this.reqList();
+          }
+        });
+      });
+    },
+    checkProps() {
+      return new Promise(resolve => {
+        if (this.user.pid === "") {
+          erroralert("请选择上级分类");
+          return;
         }
+        if (this.user.catename === "") {
+          erroralert("请输入分类名称");
+          return;
+        }
+        if (!this.user.img&&this.user.pid!==0) {
+          erroralert("请上传图片");
+          return;
+        }
+        resolve();
       });
     }
   }
@@ -190,6 +210,7 @@ export default {
   border: 1px dashed #999;
   position: relative;
 }
+
 .my-upload .add {
   width: 100px;
   height: 100px;
@@ -198,6 +219,7 @@ export default {
   font-size: 30px;
   color: #666;
 }
+
 .my-upload .ipt {
   width: 100px;
   height: 100px;
@@ -207,6 +229,7 @@ export default {
   opacity: 0;
   cursor: pointer;
 }
+
 .my-upload .img {
   width: 100px;
   height: 100px;
@@ -214,8 +237,9 @@ export default {
   left: 0;
   top: 0;
 }
+
+// 穿透
 /* element-ui的样式 */
-// 穿透 
 .form >>>.el-upload {
   border: 1px dashed #d9d9d9;
   border-radius: 6px;
@@ -223,9 +247,11 @@ export default {
   position: relative;
   overflow: hidden;
 }
+
 .avatar-uploader .el-upload:hover {
   border-color: #409eff;
 }
+
 .avatar-uploader-icon {
   font-size: 28px;
   color: #8c939d;
@@ -234,6 +260,7 @@ export default {
   line-height: 178px;
   text-align: center;
 }
+
 .avatar {
   width: 178px;
   height: 178px;
