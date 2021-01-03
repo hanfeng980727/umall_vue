@@ -7,7 +7,7 @@
       @closed="cancle"
     >
       <!-- 内容 -->
-
+      {{user}}
       <el-form ref="form" :model="user" label-width="80px">
         <el-form-item label="所属角色">
           <el-select v-model="user.roleid" placeholder="请选择">
@@ -40,6 +40,7 @@
         <el-button type="primary" @click="manageAdd()" v-if="info.change">添加</el-button>
         <el-button type="primary" @click="manageUpdate()" v-else>修改</el-button>
       </span>
+      
     </el-dialog>
   </div>
 </template>
@@ -76,6 +77,10 @@ export default {
     // 添加
     manageAdd() {
       this.checkProps().then(()=>{
+        if(this.user.password===""){
+          erroralert("密码不能为空");
+          return;
+        }
         reqUseradd(this.user).then(res => {
         if (res.data.code === 200) {
           successalert(res.data.msg);
@@ -134,10 +139,12 @@ export default {
           erroralert("用户名不能为空");
           return;
         }
-        if (this.user.password === "") {
-          erroralert("密码不能为空");
-          return;
-        }
+        // 因为密码需要加密，需要对密码在编辑的时候进行清空
+        // 对于密码清空以后，不对密码进行操作，相当于密码不进行修改
+        // if (this.user.password === "") {
+        //   erroralert("密码不能为空");
+        //   return;
+        // }
 
         resolve();
       });

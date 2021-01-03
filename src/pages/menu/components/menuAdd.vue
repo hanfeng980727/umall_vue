@@ -21,7 +21,7 @@
             <el-radio :label="2" disabled>菜单</el-radio>
           </el-radio-group>
         </el-form-item>
-        {{user}}
+        <!-- {{user}} -->
         <el-form-item label="菜单图标" v-if="user.type===1">
           <el-select v-model="user.icon">
             <el-option v-for="item in icon" :key="item" :value="item">

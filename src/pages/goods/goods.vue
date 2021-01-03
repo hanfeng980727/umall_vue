@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="box">
     <el-button type="primary" @click="willAdd">添加</el-button>
     <v-list @edit="edit"></v-list>
     <v-add :info="info" ref="add"></v-add>
@@ -37,5 +37,8 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
+.box{
+  margin: 20px auto;
+}
 </style>

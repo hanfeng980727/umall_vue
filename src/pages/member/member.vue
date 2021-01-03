@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="box">
       <v-edit :info="info" ref="upd" @init="init"></v-edit>
       <v-list :list="list" @edit="edit"></v-list>
   </div>
@@ -42,6 +42,8 @@ mounted(){
 }
 </script>
 
-<style>
-
+<style scoped>
+.box{
+  margin: 20px auto;
+}
 </style>

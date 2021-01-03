@@ -79,7 +79,7 @@ export default {
         attrs: "[]",
         status: 1
       }),
-        (this.attrsArr = [{ value: "" }]);
+        this.attrsArr = [{ value: "" }];
     },
     //点了添加
     add() {
@@ -135,6 +135,12 @@ export default {
     },
     // 封装一个验证
     checkProps() {
+        // 如果需要的话需要对每一个规格属性都要进行验证,利用some迭代
+        // let arrs = this.attrsArr.some((item)=>item.value===""
+        // )
+        // console.log(arrs);
+        
+
       return new Promise((resolve, reject) => {
 
         if (this.user.specsname === "") {
@@ -142,7 +148,8 @@ export default {
           return;
         }
 
-        if (this.attrsArr[0].value === "") {
+        if (this.attrsArr.some((item)=>item.value===""
+        )) {
           erroralert("请选择规格属性");
           return;
         }
